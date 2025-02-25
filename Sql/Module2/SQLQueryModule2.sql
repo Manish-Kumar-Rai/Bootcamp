@@ -163,3 +163,46 @@ SELECT * FROM module2.employees
 WHERE hiring_date = (SELECT MIN(hiring_date) FROM module2.employees);
 
 SELECT TOP 1 * FROM module2.employees ORDER BY salary DESC;
+
+------- LIKE ------------
+
+SELECT * FROM module2.employees WHERE [name] LIKE 'j%';
+
+-------------- FUNCTIONS --------------------
+
+IF OBJECT_ID('module2.sales','U') IS NULL
+BEGIN
+	CREATE TABLE module2.sales(
+		sale_id INT IDENTITY(1,1) PRIMARY KEY,
+		salesperson VARCHAR(50),
+		[product] VARCHAR(50),
+		quantity INT,
+		price_per_unit DECIMAL(8,2),
+		sale_date DATE
+	)
+END;
+
+SELECT * FROM module2.sales;
+
+IF OBJECT_ID('module2.calculate_total_revenue','FN') IS NOT NULL
+	DROP FUNCTION module2.calculate_total_revenue;
+GO
+
+CREATE FUNCTION module2.calculate_total_revenue(@saleperson_name VARCHAR(50))
+RETURNS DECIMAL(10,2)
+AS
+BEGIN
+	DECLARE @total_revenue DECIMAL(10,2)
+	SELECT @total_revenue = (Quantity * price_per_unit)
+	FROM module2.sales
+	WHERE salesperson = @saleperson_name
+	--- handle null exception
+	RETURN ISNULL(@total_revenue,0)
+END;
+GO
+
+SELECT
+	*,
+	module2.calculate_total_revenue(salesperson) AS total_revenue
+FROM module2.sales;
+
