@@ -248,6 +248,118 @@ SELECT
 	END AS 'type'
 FROM module3.uber AS u;
 
+----------- JOIN -------------------
+
+IF OBJECT_ID('module3.orders','U') IS NOT NULL
+	DROP TABLE module3.orders
+GO
+
+CREATE TABLE module3.orders(
+	order_id INT,
+	cust_id INT,
+	order_date DATE,
+	shipper_id INT
+);
+
+IF OBJECT_ID('module3.shippers','U') IS NOT NULL
+	DROP TABLE module3.shippers
+GO
+
+CREATE TABLE module3.shippers(
+	ship_id INT,
+	shipper_name VARCHAR(50)
+);
+
+SELECT * FROM module3.customers;
+
+SELECT * FROM module3.shippers;
+
+SELECT * FROM module3.orders;
+
+
+--SELECT
+--	O.*,
+--	C.*,
+--	S.*
+--FROM module3.orders AS O
+--FULL OUTER JOIN module3.customers AS C
+--	ON O.cust_id = C.cust_id
+--FULL OUTER JOIN module3.shippers AS S
+--	ON O.shipper_id = S.ship_id
+--WHERE S.ship_id IS NULL
+--ORDER BY C.cust_id;
+
+IF OBJECT_ID('module3.customers','U') IS NOT NULL
+	DROP TABLE module3.customers
+GO
+
+CREATE TABLE module3.customers(
+	customer_id INT,
+	first_name VARCHAR(20),
+	last_name VARCHAR(20),
+	[state] VARCHAR(50),
+	birthdate DATE,
+	gender VARCHAR(10)
+);
+
+IF OBJECT_ID('module3.products','U') IS NOT NULL
+	DROP TABLE module3.products
+GO
+
+CREATE TABLE module3.products(
+	product_id INT,
+	product_class_id INT,
+	brand_name VARCHAR(20),
+	product_name VARCHAR(20),
+	[state] VARCHAR(50),
+	is_low_fat_fig TINYINT,
+	is_recyclable_fig TINYINT,
+	gross_weight DECIMAL(10,2),
+	net_weight DECIMAL(10,2)
+);
+
+IF OBJECT_ID('module3.sales','U') IS NOT NULL
+	DROP TABLE module3.sales
+GO
+
+CREATE TABLE module3.sales(
+	product_id INT,
+	store_id INT,
+	customer_id INT,
+	promotion_id INT,
+	store_sales DECIMAL(10,2),
+	store_cost DECIMAL(10,2),
+	unit_solds DECIMAL(10,2),
+	transaction_date DATE
+);
+
+SELECT * FROM module3.products;
+
+SELECT * FROM module3.customers;
+
+SELECT * FROM module3.sales;
+
+
+SELECT
+	S.customer_id
+FROM module3.sales AS S
+LEFT JOIN module3.products AS P
+	ON S.product_id = P.product_id
+WHERE P.brand_name = 'Amul';
+
+SELECT
+	*
+FROM module3.customers
+WHERE customer_id NOT IN (
+				SELECT
+					S.customer_id
+				FROM module3.sales AS S
+				LEFT JOIN module3.products AS P
+					ON S.product_id = P.product_id
+				WHERE P.brand_name = 'Amul'
+);
+
+
 /*
 SELECT 6
 TOP 8
@@ -259,3 +371,4 @@ GROUP BY 4
 HAVING 5
 ORDER BY 9
 */
+
