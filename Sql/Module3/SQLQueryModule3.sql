@@ -359,6 +359,18 @@ WHERE customer_id NOT IN (
 				WHERE P.brand_name = 'Amul'
 );
 
+SELECT
+	*
+FROM module3.customers AS C
+WHERE NOT EXISTS(
+				SELECT
+					1
+				FROM module3.sales AS S
+				JOIN module3.products AS P
+					ON P.product_id = S.product_id
+				WHERE S.customer_id = C.customer_id AND P.brand_name = 'Amul'
+);
+
 
 /*
 SELECT 6
